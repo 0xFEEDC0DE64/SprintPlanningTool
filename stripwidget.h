@@ -16,9 +16,16 @@ public:
 
     bool startDragging(const QPoint &pos) const;
 
+    QString title() const;
     void setTitle(const QString &title);
+
+    QString description() const;
     void setDescription(const QString &description);
+
+    int points() const;
     void setPoints(int points);
+
+    QString owner() const;
     void setOwner(const QString &owner);
 
 private:

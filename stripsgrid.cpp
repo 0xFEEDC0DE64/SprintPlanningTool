@@ -9,15 +9,12 @@
 #include <QRandomGenerator>
 #include <QDateTime>
 
+#include <algorithm>
+
 #include "stripwidget.h"
 #include "flowlayout.h"
 
 namespace {
-QDebug &operator<<(QDebug &debug, const QMouseEvent &event)
-{
-    return debug << "QMouseEvent(" << event.pos() << event.source() << event.flags() << ")";
-}
-
 template<typename T>
 void call_n_times(int count, T func)
 {
@@ -40,6 +37,14 @@ StripsGrid::StripsGrid(QWidget *parent) :
         int column{0};
         for (const auto text : {"Story", "To Do:", "In Progress:", "In Review:", "Done:"})
         {
+            if (column)
+            {
+                auto line = new QFrame;
+                line->setFrameShape(QFrame::VLine);
+                line->setFrameShadow(QFrame::Sunken);
+                m_layout->addWidget(line, row, column++, (stories*2)+1, 1);
+            }
+
             auto label = new QLabel{text};
             {
                 auto font = label->font();
@@ -48,13 +53,6 @@ StripsGrid::StripsGrid(QWidget *parent) :
             }
             label->setFixedHeight(40);
             m_layout->addWidget(label, row, column++);
-
-            {
-                auto line = new QFrame;
-                line->setFrameShape(QFrame::VLine);
-                line->setFrameShadow(QFrame::Sunken);
-                m_layout->addWidget(line, row, column++, (stories*2)+1, 1);
-            }
         }
     }
 
@@ -73,9 +71,10 @@ StripsGrid::StripsGrid(QWidget *parent) :
 
         int storyPoints{0};
 
-        auto storyWidget = new StripWidget;
-        storyWidget->setTitle(QString("ATC-%0").arg(random.bounded(1000, 5000)));
-        storyWidget->setStyleSheet("StripWidget { background-color: #AFA; }");
+        Story story;
+        story.widget = new StripWidget;
+        story.widget->setTitle(QString("ATC-%0").arg(random.bounded(1000, 5000)));
+        story.widget->setStyleSheet("StripWidget { background-color: #AFA; }");
 
         for (int column = 0; column < 5; column++)
         {
@@ -83,19 +82,16 @@ StripsGrid::StripsGrid(QWidget *parent) :
             {
                 auto layout = new QVBoxLayout;
                 layout->addSpacing(0);
-                layout->addWidget(storyWidget);
+                layout->addWidget(story.widget);
                 layout->addStretch(1);
                 m_layout->addLayout(layout, row, column*2);
             }
             else
             {
-                int count = random.bounded(0, 5);
-                if (!count)
-                    continue;
+                auto &test = story.columns[column-1];
+                test.layout = new FlowLayout;
 
-                auto layout = new FlowLayout;
-
-                call_n_times(count, [&]()
+                call_n_times(random.bounded(6), [&]()
                 {
                     auto widget = new StripWidget;
                     widget->setTitle(QString("ATC-%0").arg(random.bounded(1000, 5000)));
@@ -106,71 +102,71 @@ StripsGrid::StripsGrid(QWidget *parent) :
                     }
                     widget->setOwner(std::array<const char *, 5>{"DB", "KW", "BK", "MS", "AS"}[random.bounded(5)]);
                     widget->setStyleSheet("StripWidget { background-color: #FCC; }");
-                    layout->addWidget(widget);
+                    test.layout->addWidget(widget);
+                    test.widgets.push_back(widget);
                 });
 
-                m_layout->addLayout(layout, row, column*2);
+                m_layout->addLayout(test.layout, row, column*2);
             }
         }
 
-        storyWidget->setPoints(storyPoints);
+        story.widget->setPoints(storyPoints);
+        m_stories.push_back(story);
 
         row++;
     });
 
     m_layout->addItem(new QSpacerItem{0, 40, QSizePolicy::Minimum, QSizePolicy::Expanding}, ++row, 0, 1, 5);
-
-    m_widget = new StripWidget{this};
-    m_widget->setStyleSheet("StripWidget { background-color: #88FFFF; }");
-    m_widget->move(100, 100);
-
-//    auto widget = new QWidget;
-//    setCentralWidget(widget);
-
-//    m_layout = new QGridLayout{widget};
-//    const auto addColumn = [&](const QString &name)
-//    {
-//        auto label = new QLabel{name};
-//        {
-//            auto font = label->font();
-//            font.setPointSize(30);
-//            label->setFont(font);
-//        }
-//        m_layout->addWidget(label, 0, m_layout->columnCount());
-//    };
-//    addColumn("To Do");
-//    addColumn("In Progress");
-//    addColumn("In Review");
-//    addColumn("Done");
-
-//    m_layout->addWidget(new QWidget, 1, 0);
 }
 
 void StripsGrid::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "mousePressEvent" << *event;
-
     if (event->button() == Qt::LeftButton &&
-        !m_isDragging &&
-        m_widget->startDragging(event->pos() - m_widget->pos()))
+        !m_dragWidget)
     {
-        m_widget->setGraphicsEffect(new QGraphicsOpacityEffect);
-        m_isDragging = true;
-        m_dragOffset = event->pos() - m_widget->pos();
+        for (const auto &story : m_stories)
+        {
+            for (const auto &column : story.columns)
+            {
+                for (auto *subtaskWidget : column.widgets)
+                {
+                    if (subtaskWidget->startDragging(event->pos() - subtaskWidget->pos()))
+                    {
+                        m_draggedWidget = subtaskWidget;
+                        m_draggedWidget->setGraphicsEffect(new QGraphicsBlurEffect);
+
+                        m_dragWidget = new StripWidget{this};
+                        m_dragWidget->setTitle(m_draggedWidget->title());
+                        m_dragWidget->setDescription(m_draggedWidget->description());
+                        m_dragWidget->setPoints(m_draggedWidget->points());
+                        m_dragWidget->setOwner(m_draggedWidget->owner());
+                        m_dragWidget->setStyleSheet(m_draggedWidget->styleSheet());
+                        m_dragWidget->move(m_draggedWidget->pos());
+                        m_dragWidget->setGraphicsEffect(new QGraphicsDropShadowEffect);
+                        m_dragWidget->show();
+
+                        m_dragOffset = event->pos() - m_draggedWidget->pos();
+                        goto after;
+                    }
+                }
+            }
+        }
     }
+
+    after:
 
     QWidget::mousePressEvent(event);
 }
 
 void StripsGrid::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << "mouseReleaseEvent" << *event;
-
     if (event->button() == Qt::LeftButton &&
-        m_isDragging)
+        m_dragWidget)
     {
-        m_widget->setGraphicsEffect(nullptr);
-        m_isDragging = false;
+        m_draggedWidget->setGraphicsEffect(nullptr);
+        m_draggedWidget = nullptr;
+        m_dragWidget->deleteLater();
+        m_dragWidget = nullptr;
     }
 
     QWidget::mouseReleaseEvent(event);
@@ -178,10 +174,46 @@ void StripsGrid::mouseReleaseEvent(QMouseEvent *event)
 
 void StripsGrid::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug() << "mouseMoveEvent" << *event;
+    if (m_dragWidget)
+    {
+        Story::Column *currentColumn{};
 
-    if (m_isDragging)
-        m_widget->move(event->pos() - m_dragOffset);
+        for (auto &story : m_stories)
+        {
+            for (auto &column : story.columns)
+            {
+                if (std::find(column.widgets.begin(), column.widgets.end(), m_draggedWidget) != column.widgets.end())
+                    currentColumn = &column;
+            }
+        }
+
+        Story::Column *newColumn{};
+        for (auto &story : m_stories)
+        {
+            for (auto &column : story.columns)
+            {
+                if (column.layout->geometry().contains(event->pos()))
+                    newColumn = &column;
+            }
+        }
+
+        if (currentColumn != newColumn && newColumn != nullptr)
+        {
+            if (currentColumn)
+            {
+                currentColumn->layout->removeWidget(m_draggedWidget);
+                currentColumn->widgets.erase(std::remove(currentColumn->widgets.begin(), currentColumn->widgets.end(), m_draggedWidget), currentColumn->widgets.end());
+
+                currentColumn->layout->update();
+            }
+
+            newColumn->layout->addWidget(m_draggedWidget);
+            newColumn->widgets.push_back(m_draggedWidget);
+            newColumn->layout->update();
+        }
+
+        m_dragWidget->move(event->pos() - m_dragOffset);
+    }
 
     QWidget::mouseMoveEvent(event);
 }

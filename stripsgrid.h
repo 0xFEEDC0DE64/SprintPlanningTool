@@ -2,9 +2,12 @@
 
 #include <QWidget>
 
+#include <vector>
+
 class QGridLayout;
 
 class StripWidget;
+class FlowLayout;
 
 class StripsGrid : public QWidget
 {
@@ -21,7 +24,21 @@ protected:
 private:
     QGridLayout *m_layout;
 
-    bool m_isDragging{false};
+    StripWidget *m_draggedWidget{};
+    StripWidget *m_dragWidget{};
     QPoint m_dragOffset;
-    StripWidget *m_widget;
+
+    struct Story {
+        StripWidget *widget;
+
+        struct Column {
+            FlowLayout *layout;
+
+            std::vector<StripWidget*> widgets;
+        };
+
+        std::array<Column, 4> columns;
+    };
+
+    std::vector<Story> m_stories;
 };
