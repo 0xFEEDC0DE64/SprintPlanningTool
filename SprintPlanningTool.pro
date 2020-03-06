@@ -20,4 +20,5 @@ HEADERS += \
     stripsgrid.h \
     stripwidget.h
 
-OTHER_FILES += .travis.yml
+OTHER_FILES += README.md \
+    .travis.yml
