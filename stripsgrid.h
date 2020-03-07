@@ -5,6 +5,7 @@
 #include <vector>
 
 class QGridLayout;
+class QLabel;
 
 class StripWidget;
 class FlowLayout;
@@ -22,11 +23,15 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+    void updatePoints();
+
     QGridLayout *m_layout;
 
     StripWidget *m_draggedWidget{};
     StripWidget *m_dragWidget{};
     QPoint m_dragOffset;
+
+    std::array<QLabel*, 5> m_tableHeader;
 
     struct Story {
         StripWidget *widget;

@@ -71,20 +71,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLabel" name="points">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Panel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="text">
-        <string>1</string>
+      <widget class="QSpinBox" name="points">
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
       </widget>
      </item>
@@ -102,21 +91,45 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="owner">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
+      <widget class="QComboBox" name="owner">
+       <property name="frame">
+        <bool>false</bool>
        </property>
-       <property name="frameShape">
-        <enum>QFrame::Panel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="text">
-        <string>OW</string>
-       </property>
+       <item>
+        <property name="text">
+         <string>BK</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>KW</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>DB</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>AS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>RH</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>
