@@ -22,7 +22,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>798</width>
+      <width>739</width>
       <height>558</height>
      </rect>
     </property>
@@ -43,9 +43,24 @@
     </property>
     <addaction name="action_Quit"/>
    </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_View"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Points per story</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="ChartPerStory" name="chartPerStory"/>
+  </widget>
   <action name="action_Quit">
    <property name="text">
     <string>&amp;Quit</string>
@@ -57,6 +72,12 @@
    <class>StripsGrid</class>
    <extends>QWidget</extends>
    <header>stripsgrid.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ChartPerStory</class>
+   <extends>QWidget</extends>
+   <header>chartperstory.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

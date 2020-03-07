@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QMap>
 
 #include <vector>
 
@@ -16,6 +17,11 @@ class StripsGrid : public QWidget
 
 public:
     explicit StripsGrid(QWidget *parent = nullptr);
+
+    const auto &pointsPerStory() const { return m_pointsPerStory; }
+
+signals:
+    void pointsPerStoryChanged(const QMap<QString, QMap<QString, int> > &pointsPerStory);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -46,4 +52,6 @@ private:
     };
 
     std::vector<Story> m_stories;
+
+    QMap<QString, QMap<QString, int> > m_pointsPerStory;
 };

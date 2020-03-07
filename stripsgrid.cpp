@@ -28,7 +28,7 @@ StripsGrid::StripsGrid(QWidget *parent) :
 
     QRandomGenerator random((qint32)(QDateTime::currentMSecsSinceEpoch()));
 
-    const auto stories = random.bounded(3, 10);
+    const auto stories = random.bounded(3, 6);
 
     int row{0};
     {
@@ -86,7 +86,7 @@ StripsGrid::StripsGrid(QWidget *parent) :
                 auto &test = story.columns[column-1];
                 test.layout = new FlowLayout;
 
-                call_n_times(random.bounded(6), [&]()
+                call_n_times(random.bounded(4), [&]()
                 {
                     auto widget = new StripWidget{StripWidget::Subtask};
                     widget->setTitle(QString("ATC-%0").arg(random.bounded(1000, 5000)));
@@ -210,20 +210,26 @@ void StripsGrid::mouseMoveEvent(QMouseEvent *event)
 void StripsGrid::updatePoints()
 {
     std::array<int, 5> sumsPerColumn{0,0,0,0,0};
+    m_pointsPerStory.clear();
 
     for (const auto &story : m_stories)
     {
         int storyPoints = 0;
-        sumsPerColumn[0] += story.widget->points();
+
+        auto &test = m_pointsPerStory[story.widget->title()];
 
         for (int i = 0; i < 4; i++)
         {
             int columnSum = 0;
             for (const auto *widget : story.columns[i].widgets)
+            {
                 columnSum += widget->points();
+                test[widget->title()] = widget->points();
+            }
             sumsPerColumn[i+1] += columnSum;
             storyPoints += columnSum;
         }
+        sumsPerColumn[0] += storyPoints;
         story.widget->setPoints(storyPoints);
     }
 
@@ -237,4 +243,6 @@ void StripsGrid::updatePoints()
 
     for (int i = 0; i < 5; i++)
         m_tableHeader[i]->setText(texts[i].arg(sumsPerColumn[i]));
+
+    emit pointsPerStoryChanged(m_pointsPerStory);
 }
