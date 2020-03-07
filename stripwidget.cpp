@@ -15,6 +15,7 @@ StripWidget::StripWidget(QWidget *parent) :
     setFixedSize(size());
 
     connect(m_ui->points, &QSpinBox::valueChanged, this, &StripWidget::pointsChanged);
+    connect(m_ui->owner, &QComboBox::currentText, this, &StripWidget::ownerChanged);
 }
 
 StripWidget::StripWidget(StripWidget::Story_t, QWidget *parent) :

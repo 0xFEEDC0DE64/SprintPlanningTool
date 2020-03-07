@@ -22,8 +22,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>739</width>
-      <height>558</height>
+      <width>734</width>
+      <height>544</height>
      </rect>
     </property>
    </widget>
@@ -34,7 +34,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>18</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -61,6 +61,12 @@
    </attribute>
    <widget class="ChartPerStory" name="chartPerStory"/>
   </widget>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="ChartPerUser" name="chartPerUser"/>
+  </widget>
   <action name="action_Quit">
    <property name="text">
     <string>&amp;Quit</string>
@@ -77,6 +83,12 @@
    <class>ChartPerStory</class>
    <extends>QWidget</extends>
    <header>chartperstory.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChartPerUser</class>
+   <extends>QWidget</extends>
+   <header>chartperuser.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

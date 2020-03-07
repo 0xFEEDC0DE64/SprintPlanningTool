@@ -19,9 +19,11 @@ public:
     explicit StripsGrid(QWidget *parent = nullptr);
 
     const auto &pointsPerStory() const { return m_pointsPerStory; }
+    const auto &pointsPerUser() const { return m_pointsPerUser; }
 
 signals:
     void pointsPerStoryChanged(const QMap<QString, QMap<QString, int> > &pointsPerStory);
+    void pointsPerUserChanged(const QMap<QString, int> &pointsPerUser);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -54,4 +56,5 @@ private:
     std::vector<Story> m_stories;
 
     QMap<QString, QMap<QString, int> > m_pointsPerStory;
+    QMap<QString, int> m_pointsPerUser;
 };

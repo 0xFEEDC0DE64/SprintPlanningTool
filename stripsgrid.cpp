@@ -93,6 +93,7 @@ StripsGrid::StripsGrid(QWidget *parent) :
                     widget->setPoints(std::array<int, 5>{1,3,5,8,13}[random.bounded(5)]);
                     widget->setOwner(std::array<const char *, 5>{"DB", "KW", "BK", "MS", "AS"}[random.bounded(5)]);
                     connect(widget, &StripWidget::pointsChanged, this, &StripsGrid::updatePoints);
+                    connect(widget, &StripWidget::ownerChanged, this, &StripsGrid::updatePoints);
                     test.layout->addWidget(widget);
                     test.widgets.push_back(widget);
                 });
@@ -211,6 +212,7 @@ void StripsGrid::updatePoints()
 {
     std::array<int, 5> sumsPerColumn{0,0,0,0,0};
     m_pointsPerStory.clear();
+    m_pointsPerUser.clear();
 
     for (const auto &story : m_stories)
     {
@@ -225,6 +227,8 @@ void StripsGrid::updatePoints()
             {
                 columnSum += widget->points();
                 test[widget->title()] = widget->points();
+
+                m_pointsPerUser[widget->owner()] += widget->points();
             }
             sumsPerColumn[i+1] += columnSum;
             storyPoints += columnSum;
@@ -245,4 +249,5 @@ void StripsGrid::updatePoints()
         m_tableHeader[i]->setText(texts[i].arg(sumsPerColumn[i]));
 
     emit pointsPerStoryChanged(m_pointsPerStory);
+    emit pointsPerUserChanged(m_pointsPerUser);
 }

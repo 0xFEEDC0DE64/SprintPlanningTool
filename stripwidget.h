@@ -46,6 +46,7 @@ public:
 
 signals:
     void pointsChanged(int points);
+    void ownerChanged(const QString &owner);
 
 private:
     std::unique_ptr<Ui::StripWidget> m_ui;

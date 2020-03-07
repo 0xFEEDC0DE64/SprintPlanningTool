@@ -8,7 +8,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->setupUi(this);
 
     connect(m_ui->stripsGrid, &StripsGrid::pointsPerStoryChanged, m_ui->chartPerStory, &ChartPerStory::setPoints);
+    connect(m_ui->stripsGrid, &StripsGrid::pointsPerUserChanged, m_ui->chartPerUser, &ChartPerUser::setPoints);
+
     m_ui->chartPerStory->setPoints(m_ui->stripsGrid->pointsPerStory());
+    m_ui->chartPerUser->setPoints(m_ui->stripsGrid->pointsPerUser());
 
     for (QDockWidget *dockWidget : findChildren<QDockWidget*>())
     {

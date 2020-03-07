@@ -6,6 +6,7 @@ DEFINES += QT_DEPRECATED_WARNINGS QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 SOURCES += main.cpp \
     chartperstory.cpp \
+    chartperuser.cpp \
     donutbreakdownchart.cpp \
     flowlayout.cpp \
     mainslice.cpp \
@@ -19,6 +20,7 @@ FORMS += \
 
 HEADERS += \
     chartperstory.h \
+    chartperuser.h \
     donutbreakdownchart.h \
     flowlayout.h \
     mainslice.h \
