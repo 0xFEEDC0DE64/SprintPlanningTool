@@ -29,6 +29,9 @@
          <pointsize>13</pointsize>
         </font>
        </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
        </property>

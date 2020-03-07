@@ -94,9 +94,11 @@ void StripWidget::setOwner(const QString &owner)
 void StripWidget::beginDrag()
 {
     setGraphicsEffect(new QGraphicsOpacityEffect);
+    m_ui->title->setCursor(Qt::ClosedHandCursor);
 }
 
 void StripWidget::endDrag()
 {
     setGraphicsEffect(nullptr);
+    m_ui->title->setCursor(Qt::OpenHandCursor);
 }
