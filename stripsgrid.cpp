@@ -70,7 +70,6 @@ StripsGrid::StripsGrid(QWidget *parent) :
         Story story;
         story.widget = new StripWidget{StripWidget::Story};
         story.widget->setTitle(QString("ATC-%0").arg(random.bounded(1000, 5000)));
-        story.widget->setOwner("RH");
 
         for (int column = 0; column < 5; column++)
         {
@@ -93,6 +92,7 @@ StripsGrid::StripsGrid(QWidget *parent) :
                     widget->setTitle(QString("ATC-%0").arg(random.bounded(1000, 5000)));
                     widget->setPoints(std::array<int, 5>{1,3,5,8,13}[random.bounded(5)]);
                     widget->setOwner(std::array<const char *, 5>{"DB", "KW", "BK", "MS", "AS"}[random.bounded(5)]);
+                    connect(widget, &StripWidget::pointsChanged, this, &StripsGrid::updatePoints);
                     test.layout->addWidget(widget);
                     test.widgets.push_back(widget);
                 });
@@ -122,17 +122,12 @@ void StripsGrid::mousePressEvent(QMouseEvent *event)
             {
                 for (auto *subtaskWidget : column.widgets)
                 {
-                    if (subtaskWidget->startDragging(event->pos() - subtaskWidget->pos()))
+                    if (subtaskWidget->isInDragArea(event->pos() - subtaskWidget->pos()))
                     {
                         m_draggedWidget = subtaskWidget;
                         m_draggedWidget->beginDrag();
 
-                        m_dragWidget = new StripWidget{StripWidget::DraggedSubtask, this};
-                        m_dragWidget->setTitle(m_draggedWidget->title());
-                        m_dragWidget->setDescription(m_draggedWidget->description());
-                        m_dragWidget->setPoints(m_draggedWidget->points());
-                        m_dragWidget->setOwner(m_draggedWidget->owner());
-                        m_dragWidget->setStyleSheet(m_draggedWidget->styleSheet());
+                        m_dragWidget = new StripWidget{StripWidget::DraggingSubtask, *m_draggedWidget, this};
                         m_dragWidget->move(m_draggedWidget->pos());
                         m_dragWidget->show();
 
@@ -157,7 +152,7 @@ void StripsGrid::mouseReleaseEvent(QMouseEvent *event)
         m_draggedWidget->endDrag();
         m_draggedWidget = nullptr;
 
-        m_dragWidget->deleteLater();
+        delete m_dragWidget;
         m_dragWidget = nullptr;
     }
 

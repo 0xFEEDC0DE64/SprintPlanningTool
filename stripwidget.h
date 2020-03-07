@@ -19,15 +19,15 @@ public:
     struct Subtask_t{};
     static constexpr const Subtask_t Subtask{};
 
-    struct DraggedSubtask_t{};
-    static constexpr const DraggedSubtask_t DraggedSubtask{};
+    struct DraggingSubtask_t{};
+    static constexpr const DraggingSubtask_t DraggingSubtask{};
 
     explicit StripWidget(Story_t, QWidget *parent = nullptr);
     explicit StripWidget(Subtask_t, QWidget *parent = nullptr);
-    explicit StripWidget(DraggedSubtask_t, QWidget *parent = nullptr);
+    explicit StripWidget(DraggingSubtask_t, const StripWidget &draggedSubtask, QWidget *parent = nullptr);
     ~StripWidget() override;
 
-    bool startDragging(const QPoint &pos) const;
+    bool isInDragArea(const QPoint &pos) const;
 
     QString title() const;
     void setTitle(const QString &title);
@@ -43,6 +43,9 @@ public:
 
     void beginDrag();
     void endDrag();
+
+signals:
+    void pointsChanged(int points);
 
 private:
     std::unique_ptr<Ui::StripWidget> m_ui;

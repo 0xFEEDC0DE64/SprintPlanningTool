@@ -13,6 +13,8 @@ StripWidget::StripWidget(QWidget *parent) :
     setMinimumSize(size());
     setMaximumSize(size());
     setFixedSize(size());
+
+    connect(m_ui->points, &QSpinBox::valueChanged, this, &StripWidget::pointsChanged);
 }
 
 StripWidget::StripWidget(StripWidget::Story_t, QWidget *parent) :
@@ -20,6 +22,9 @@ StripWidget::StripWidget(StripWidget::Story_t, QWidget *parent) :
 {
     m_ui->points->setReadOnly(true);
     m_ui->points->setMaximum(9999);
+
+    delete m_ui->owner;
+    m_ui->owner = nullptr;
 
     setStyleSheet("StripWidget { background-color: #AFA; }");
 }
@@ -30,15 +35,18 @@ StripWidget::StripWidget(StripWidget::Subtask_t, QWidget *parent) :
     setStyleSheet("StripWidget { background-color: #FCC; }");
 }
 
-StripWidget::StripWidget(StripWidget::DraggedSubtask_t, QWidget *parent) :
+StripWidget::StripWidget(StripWidget::DraggingSubtask_t, const StripWidget &draggedSubtask, QWidget *parent) :
     StripWidget{Subtask, parent}
 {
-    setGraphicsEffect(new QGraphicsDropShadowEffect);
+    setTitle(draggedSubtask.title());
+    setDescription(draggedSubtask.description());
+    setPoints(draggedSubtask.points());
+    setOwner(draggedSubtask.owner());
 }
 
 StripWidget::~StripWidget() = default;
 
-bool StripWidget::startDragging(const QPoint &pos) const
+bool StripWidget::isInDragArea(const QPoint &pos) const
 {
     return m_ui->title->geometry().contains(pos);
 }
