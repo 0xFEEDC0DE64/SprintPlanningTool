@@ -14,7 +14,7 @@ install:
   - mkdir -p qt5
   - if [ ! -d qt5/.git ] ; then rm qt5 -Rf ; git clone --branch=5.15 git://code.qt.io/qt/qt5.git ; fi
   - pushd qt5
-  - if [ ! -d qtbase/.git ] ; then perl init-repository --module-subset=qtbase ; fi
+  - if [ ! -d qtbase/.git ] ; then perl init-repository --module-subset=qtbase,qtcharts ; fi
   - if [ ! -f config.summary ] ; then ./configure -prefix `pwd`/build -opensource -confirm-license -no-opengl -nomake examples -nomake tests ; fi
   - if [ ! -d build ] ; then make -j2 > /dev/null && make install ; fi
   - popd
